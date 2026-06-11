@@ -6,6 +6,8 @@ import {
   LogoLinkedin,
    LogoGithub,
 } from "@gravity-ui/icons";
+import Image from "next/image";
+import logo from '@/assets/images/logo.png'
 
 export default function Footer() {
   return (
@@ -16,10 +18,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
 
           {/* LEFT */}
-          <div className="md:col-span-2">
-            <h2 className="text-2xl font-bold text-white">
+                  <div className="md:col-span-2">
+                    <Image src={logo} height={30} width={90} alt="logo"/>
+            {/* <h2 className="text-2xl font-bold text-white">
               hire<span className="text-blue-500">loop</span>
-            </h2>
+            </h2> */}
 
             <p className="mt-4 text-sm text-gray-400 max-w-sm">
               The AI-native career platform. Built for people who take their work seriously.

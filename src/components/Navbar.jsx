@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@heroui/react";
 import { Menu, X } from "lucide-react";
+import logo from '@/assets/images/logo.png'
+import Image from "next/image";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,9 +23,7 @@ export default function Navbar() {
 
           {/* LEFT: Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold text-white">
-              hire<span className="text-blue-500">loop</span>
-            </span>
+            <Image src={logo} height={30} width={90} alt="logo"/>
           </Link>
 
           {/* RIGHT SIDE (Desktop) */}
