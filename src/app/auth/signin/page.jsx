@@ -5,20 +5,17 @@ import Link from "next/link";
 import { Input, Button, Card, CardHeader } from "@heroui/react";
 // Gravity UI Icons
 import { Eye, EyeSlash } from "@gravity-ui/icons";
-// Assuming your better-auth client instance is exported from this path
-import {  signIn, signUp } from "@/lib/auth-client"; 
+// Auth client instance 
+import { signIn } from "@/lib/auth-client"; 
 import { FcGoogle } from "react-icons/fc";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   // Form States
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Visibility States for Passwords
+  // Visibility States for Password
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Feedback States
   const [error, setError] = useState("");
@@ -26,38 +23,28 @@ export default function SignUpPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
-  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
-  // Email/Password Sign Up Handler
-  const handleSignUp = async (e) => {
+  // Email/Password Sign In Handler
+  const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
     setIsLoading(true);
 
-    const { data, error: authError } = await signUp.email({
+    const { data, error: authError } = await signIn.email({
       email,
       password,
-      name,
-      callbackURL: "/auth/signin", 
+      callbackURL: "/", // Where to redirect your users upon successful entry
     });
 
     setIsLoading(false);
 
     if (authError) {
-      setError(authError.message || "An error occurred during sign up.");
+      setError(authError.message || "Invalid email or password.");
     } else {
-      setSuccess("Account created successfully! Redirecting...");
-      setName("");
+      setSuccess("Welcome back! Redirecting...");
       setEmail("");
       setPassword("");
-      setConfirmPassword("");
     }
   };
 
@@ -67,7 +54,7 @@ export default function SignUpPage() {
     try {
       await signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/dashboard",
       });
     } catch (err) {
       setError("Failed to initialize Google sign-in.");
@@ -79,10 +66,10 @@ export default function SignUpPage() {
       <Card className="w-full max-w-md p-6 shadow-xl border">
         <CardHeader className="flex flex-col items-center gap-1 pb-6">
           <h1 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">
-            Create an Account
+            Welcome Back
           </h1>
           <p className="text-small text-default-500">
-            Enter your details to get started
+            Sign in to manage your account
           </p>
         </CardHeader>
 
@@ -101,17 +88,7 @@ export default function SignUpPage() {
             </div>
           )}
 
-          <form onSubmit={handleSignUp} className="flex flex-col gap-4">
-            <Input
-              type="text"
-              label="Full Name"
-              variant="bordered"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
-            />
-
+          <form onSubmit={handleSignIn} className="flex flex-col gap-4">
             <Input
               type="email"
               label="Email Address"
@@ -144,35 +121,13 @@ export default function SignUpPage() {
               </button>
             </div>
 
-            {/* Confirm Password input with toggle icon */}
-            <div className="relative flex items-center">
-              <Input
-                type={showConfirmPassword ? "text" : "password"}
-                label="Confirm Password"
-                variant="bordered"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full"
-              />
-              <button
-                className="absolute right-3 z-10 focus:outline-none text-default-400 hover:text-default-600 top-[55%] -translate-y-1/2"
-                type="button"
-                onClick={toggleConfirmPasswordVisibility}
-                aria-label="toggle confirm password visibility"
-              >
-                {showConfirmPassword ? <EyeSlash className="text-xl" /> : <Eye className="text-xl" />}
-              </button>
-            </div>
-
             <Button
               type="submit"
               color="primary"
               className="w-full font-semibold mt-2"
               isLoading={isLoading}
             >
-              Sign Up
+              Sign In
             </Button>
           </form>
 
@@ -189,14 +144,14 @@ export default function SignUpPage() {
             startContent={<FcGoogle className="text-lg" />}
             onClick={handleGoogleSignIn}
           >
-            Sign up with Google
+            Sign in with Google
           </Button>
 
-          {/* Toggle Back to Sign In */}
+          {/* Toggle Back to Sign Up */}
           <p className="text-center text-small text-default-500 mt-2">
-            Already have an account?{" "}
-            <Link href="/auth/signin" className="text-primary hover:underline font-medium">
-              Sign In
+            Don't have an account yet?{" "}
+            <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+              Sign Up
             </Link>
           </p>
         </div>

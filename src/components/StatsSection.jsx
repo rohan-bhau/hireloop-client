@@ -98,7 +98,7 @@ export default function StatsSection() {
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 pb-12">
           {stats.map((stat, index) => (
-            <div
+            <div suppressHydrationWarning
               key={index}
               className="
                 rounded-3xl

@@ -45,7 +45,7 @@ export default function Navbar() {
 
             {/* Auth */}
             <Link
-              href="/signin"
+              href="/auth/signin"
               className="text-gray-300 hover:text-white text-sm"
             >
               Sign In
@@ -53,7 +53,7 @@ export default function Navbar() {
 
             <Button
               as={Link}
-              href="/signup"
+              href="/auth/signup"
               className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm px-5"
             >
               Get Started
@@ -90,7 +90,7 @@ export default function Navbar() {
             <div className="w-full h-px bg-white/10 my-2" />
 
             <Link
-              href="/signin"
+              href="/auth/signin"
               className="text-gray-300 hover:text-white text-sm"
               onClick={() => setIsOpen(false)}
             >
