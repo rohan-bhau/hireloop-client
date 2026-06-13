@@ -90,7 +90,7 @@ export default function FeaturedJobsSection() {
                 className="flex items-start gap-5 group"
               >
                 {/* Icon Box */}
-                <div
+                <div suppressHydrationWarning
                   className="
                     flex-shrink-0
                     w-16 h-16
@@ -106,7 +106,7 @@ export default function FeaturedJobsSection() {
                     group-hover:shadow-[0_0_30px_rgba(168,85,247,0.15)]
                   "
                 >
-                  <Icon
+                  <Icon suppressHydrationWarning
                     className="
                       w-7 h-7
                       text-violet-300
