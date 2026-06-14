@@ -8,6 +8,8 @@ import { Eye, EyeSlash } from "@gravity-ui/icons";
 // Assuming your better-auth client instance is exported from this path
 import {  signIn, signUp } from "@/lib/auth-client"; 
 import { FcGoogle } from "react-icons/fc";
+import {Description, Label, Radio, RadioGroup} from "@heroui/react";
+
 
 export default function SignUpPage() {
   // Form States
@@ -15,6 +17,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("seeker")
 
   // Visibility States for Passwords
   const [showPassword, setShowPassword] = useState(false);
@@ -45,6 +48,7 @@ export default function SignUpPage() {
       email,
       password,
       name,
+      role,
       callbackURL: "/auth/signin", 
     });
 
@@ -165,6 +169,28 @@ export default function SignUpPage() {
                 {showConfirmPassword ? <EyeSlash className="text-xl" /> : <Eye className="text-xl" />}
               </button>
             </div>
+
+             <div className="flex flex-col gap-4">
+      <Label>Select Your Role</Label>
+      <RadioGroup defaultValue="seeker" name="role" orientation="horizontal" onChange={(value)=>setRole(value)} >
+        <Radio  value="seeker">
+          <Radio.Control>
+            <Radio.Indicator />
+          </Radio.Control>
+          <Radio.Content>
+            <Label>Job Seeker</Label>
+          </Radio.Content>
+        </Radio>
+        <Radio value="recruiter">
+          <Radio.Control>
+            <Radio.Indicator />
+          </Radio.Control>
+          <Radio.Content>
+            <Label>Recruiter</Label>
+          </Radio.Content>
+        </Radio>
+      </RadioGroup>
+    </div>
 
             <Button
               type="submit"
