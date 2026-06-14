@@ -13,7 +13,7 @@ const RecruiterHomePage = () => {
   ];
   return (
     <div>
-          <h2 className='text-3xl font-semibold'>Welcome back, {user?.name}!</h2>
+          <h2 className='text-3xl font-semibold mb-10'>Welcome back, {user?.name}!</h2>
           <StatsGrid items={recruiterStats} />
     </div>
   )
