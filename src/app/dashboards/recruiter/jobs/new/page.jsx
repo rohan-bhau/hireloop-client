@@ -12,12 +12,15 @@ import {
   Button, 
   Switch,
   Label,
-  Description
+  Description,
+  Toast,
+  toast
 } from "@heroui/react";
 // Icons
 import { Briefcase, Calendar, Layers, ChevronDown } from "@gravity-ui/icons";
 import { TbMoneybag } from "react-icons/tb";
 import { GrLocation } from "react-icons/gr";
+import { createJob } from "@/lib/actions/jobs";
 
 export default function NewJobPage() {
   const router = useRouter();
@@ -26,7 +29,20 @@ export default function NewJobPage() {
   const [success, setSuccess] = useState("");
   const [isRemote, setIsRemote] = useState(false);
 
-  // Simulated approved company data
+  // Controlled Form Field States
+  const [title, setTitle] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [category, setCategory] = useState(new Set([]));
+  const [type, setType] = useState(new Set([]));
+  const [location, setLocation] = useState("");
+  const [currency, setCurrency] = useState(new Set(["USD"]));
+  const [salaryMin, setSalaryMin] = useState("");
+  const [salaryMax, setSalaryMax] = useState("");
+  const [description, setDescription] = useState("");
+  const [responsibilities, setResponsibilities] = useState("");
+  const [requirements, setRequirements] = useState("");
+  const [benefits, setBenefits] = useState("");
+
   const companyInfo = {
     id: "comp_67890",
     name: "HireLoop Labs Ltd.",
@@ -66,12 +82,25 @@ export default function NewJobPage() {
     }
 
     setIsLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
+
+    const parsedCategory = Array.from(category)[0] || "";
+    const parsedType = Array.from(type)[0] || "";
+    const parsedCurrency = Array.from(currency)[0] || "USD";
 
     const completeJobPayload = {
-      ...data,
+      title,
+      deadline,
+      category: parsedCategory,
+      type: parsedType,
       isRemote,
+      location: isRemote ? "Remote" : location,
+      currency: parsedCurrency,
+      salaryMin: Number(salaryMin),
+      salaryMax: Number(salaryMax),
+      description,
+      responsibilities,
+      requirements,
+      benefits,
       companyId: companyInfo.id,
       companyName: companyInfo.name,
       status: "active",
@@ -79,13 +108,39 @@ export default function NewJobPage() {
     };
 
     try {
-      console.log("Submitting Payload to MongoDB:", completeJobPayload);
-      setSuccess("Job listing published successfully! Redirecting...");
-    //   setTimeout(() => {
-    //     router.push("/dashboard/recruiter/jobs");
-    //   }, 1500);
+      console.log("Submitting Payload to Backend Server Action:", completeJobPayload);
+      const res = await createJob(completeJobPayload);
+      
+      if (res && (res.insertedId || res.acknowledged === true)) {
+        setSuccess("Job listing published successfully! Redirecting...");
+        
+        // Correct Hero UI v3 Toast call
+        toast.success("Job Posted Successfully");
+
+        // Clear Controlled Inputs
+        setTitle("");
+        setDeadline("");
+        setCategory(new Set([]));
+        setType(new Set([]));
+        setLocation("");
+        setSalaryMin("");
+        setSalaryMax("");
+        setDescription("");
+        setResponsibilities("");
+        setRequirements("");
+        setBenefits("");
+        setIsRemote(false);
+
+        setTimeout(() => {
+          router.push("/dashboards/recruiter");
+        }, 1200);
+      } else {
+        setError("Database server failed to verify submission entry.");
+      }
+
     } catch (err) {
-      setError("An unexpected database connection error occurred.");
+      console.error(err);
+      setError("An unexpected network link breakdown occurred.");
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +149,9 @@ export default function NewJobPage() {
   return (
     <div className="w-full max-w-4xl mx-auto py-12 px-6 text-white bg-[#020617] min-h-screen">
       
+      {/* Hero UI Toast Provider injected contextually inside the container */}
+      <Toast.Provider />
+
       {/* Page Header */}
       <div className="mb-10 border-b border-white/10 pb-6">
         <h1 className="text-3xl font-extrabold tracking-tight text-white mb-2">
@@ -104,7 +162,7 @@ export default function NewJobPage() {
         </p>
       </div>
 
-      {/* Messaging States */}
+      {/* Inline Banner Feedback Messages */}
       {error && (
         <div className="mb-6 rounded-xl bg-danger-500/10 border border-danger-500/20 p-4 text-sm text-danger-400 backdrop-blur-sm">
           {error}
@@ -117,7 +175,7 @@ export default function NewJobPage() {
         </div>
       )}
 
-      <Form onSubmit={handleSubmit}  className="flex flex-col gap-10">
+      <Form onSubmit={handleSubmit} className="flex flex-col gap-10">
         
         {/* SECTION 1: Job Info Card */}
         <Fieldset className="bg-[#0f172a]/60 border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col gap-6 w-full backdrop-blur-md shadow-2xl">
@@ -132,8 +190,9 @@ export default function NewJobPage() {
               <label className="text-sm font-semibold text-zinc-300">Job Title</label>
               <div className="flex items-center gap-3 border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 h-12 rounded-xl transition-all px-4">
                 <Briefcase className="text-zinc-500 text-lg flex-shrink-0" />
-                <Input
-                  name="title"
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. Senior Software Engineer"
                   required
                   className="w-full text-white bg-transparent outline-none border-none focus:ring-0 text-sm"
@@ -146,9 +205,10 @@ export default function NewJobPage() {
               <label className="text-sm font-semibold text-zinc-300">Application Deadline</label>
               <div className="flex items-center gap-3 border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 h-12 rounded-xl transition-all px-4">
                 <Calendar className="text-zinc-500 text-lg flex-shrink-0" />
-                <Input
-                  name="deadline"
+                <input
                   type="date"
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
                   required
                   className="w-full text-zinc-300 bg-transparent outline-none border-none focus:ring-0 text-sm"
                 />
@@ -159,9 +219,10 @@ export default function NewJobPage() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-zinc-300">Job Category</label>
               <Select 
-                name="category" 
                 placeholder="Select category" 
-                className="w-full text-white bg-zinc-950/50 border border-white/20 hover:border-indigo-500 rounded-xl transition-all"
+                selectedKeys={category}
+                onSelectionChange={setCategory}
+                className="w-full text-white bg-zinc-950/50 border border-white/20 hover:border-indigo-500 rounded-xl"
               >
                 <Select.Trigger className="h-12 border-none px-4">
                   <Select.Value className="text-zinc-300 text-sm" />
@@ -183,9 +244,10 @@ export default function NewJobPage() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-zinc-300">Job Type</label>
               <Select 
-                name="type" 
                 placeholder="Select type" 
-                className="w-full text-white bg-zinc-950/50 border border-white/20 hover:border-indigo-500 rounded-xl transition-all"
+                selectedKeys={type}
+                onSelectionChange={setType}
+                className="w-full text-white bg-zinc-950/50 border border-white/20 hover:border-indigo-500 rounded-xl"
               >
                 <Select.Trigger className="h-12 border-none px-4">
                   <Select.Value className="text-zinc-300 text-sm" />
@@ -193,9 +255,9 @@ export default function NewJobPage() {
                 </Select.Trigger>
                 <Select.Popover>
                   <ListBox className="bg-[#0f172a] text-white border border-white/10 rounded-xl p-1 shadow-2xl">
-                    {jobTypes.map((type) => (
-                      <ListBox.Item key={type.id} id={type.id} textValue={type.label} className="hover:bg-indigo-600 rounded-lg p-2.5 transition-colors text-sm">
-                        {type.label}
+                    {jobTypes.map((t) => (
+                      <ListBox.Item key={t.id} id={t.id} textValue={t.label} className="hover:bg-indigo-600 rounded-lg p-2.5 transition-colors text-sm">
+                        {t.label}
                       </ListBox.Item>
                     ))}
                   </ListBox>
@@ -204,7 +266,7 @@ export default function NewJobPage() {
             </div>
           </div>
 
-          {/* Location Panel - Using HeroUI v3 Compound Switch Components */}
+          {/* Location Panel using document anatomy layout */}
           <div className="p-5 rounded-xl bg-zinc-950/40 border border-white/10 flex flex-col gap-4 w-full mt-2">
             <Switch isSelected={isRemote} onChange={setIsRemote}>
               <Switch.Control className="h-[26px] w-[46px] bg-zinc-700 data-[selected=true]:bg-indigo-600 rounded-full p-0.5 transition-colors duration-200 cursor-pointer">
@@ -221,8 +283,9 @@ export default function NewJobPage() {
                 <label className="text-sm font-semibold text-zinc-300">Office Location</label>
                 <div className="flex items-center gap-3 border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 h-12 rounded-xl transition-all px-4">
                   <GrLocation className="text-zinc-500 text-lg flex-shrink-0" />
-                  <Input
-                    name="location"
+                  <input
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
                     placeholder="City, Country (e.g. Dhaka, Bangladesh)"
                     required={!isRemote}
                     className="w-full text-white bg-transparent outline-none border-none focus:ring-0 text-sm"
@@ -237,14 +300,14 @@ export default function NewJobPage() {
             <span className="text-sm font-semibold text-zinc-200">Compensation Package</span>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 items-end">
               
-              {/* Currency Select */}
+              {/* Currency */}
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-semibold text-zinc-400">Currency</label>
                 <Select 
-                  name="currency" 
                   placeholder="Currency" 
-                  className="w-full text-white bg-zinc-950/50 border border-white/20 hover:border-indigo-500 rounded-xl transition-all"
-                  defaultValue="USD"
+                  selectedKeys={currency}
+                  onSelectionChange={setCurrency}
+                  className="w-full text-white bg-zinc-950/50 border border-white/20 hover:border-indigo-500 rounded-xl"
                 >
                   <Select.Trigger className="h-12 border-none px-4">
                     <Select.Value className="text-zinc-300 text-sm" />
@@ -267,9 +330,10 @@ export default function NewJobPage() {
                 <label className="text-xs font-semibold text-zinc-400">Minimum Salary</label>
                 <div className="flex items-center gap-3 border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 h-12 rounded-xl transition-all px-4">
                   <TbMoneybag className="text-zinc-500 text-xl flex-shrink-0" />
-                  <Input
-                    name="salaryMin"
+                  <input
                     type="number"
+                    value={salaryMin}
+                    onChange={(e) => setSalaryMin(e.target.value)}
                     placeholder="e.g. 50000"
                     required
                     className="w-full text-white bg-transparent outline-none border-none focus:ring-0 text-sm"
@@ -282,9 +346,10 @@ export default function NewJobPage() {
                 <label className="text-xs font-semibold text-zinc-400">Maximum Salary</label>
                 <div className="flex items-center gap-3 border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 h-12 rounded-xl transition-all px-4">
                   <TbMoneybag className="text-zinc-500 text-xl flex-shrink-0" />
-                  <Input
-                    name="salaryMax"
+                  <input
                     type="number"
+                    value={salaryMax}
+                    onChange={(e) => setSalaryMax(e.target.value)}
                     placeholder="e.g. 80000"
                     required
                     className="w-full text-white bg-transparent outline-none border-none focus:ring-0 text-sm"
@@ -307,8 +372,9 @@ export default function NewJobPage() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-zinc-300">Core Summary & Overview</label>
               <div className="border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 rounded-xl transition-all p-3">
-                <TextArea
-                  name="description"
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder="Tell candidates about the mission, goals, and high-level impact of this role..."
                   required
                   rows={4}
@@ -321,8 +387,9 @@ export default function NewJobPage() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-zinc-300">Key Responsibilities</label>
               <div className="border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 rounded-xl transition-all p-3">
-                <TextArea
-                  name="responsibilities"
+                <textarea
+                  value={responsibilities}
+                  onChange={(e) => setResponsibilities(e.target.value)}
                   placeholder="• List your day-to-day requirements..."
                   required
                   rows={5}
@@ -335,8 +402,9 @@ export default function NewJobPage() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-zinc-300">Job Requirements & Skills</label>
               <div className="border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 rounded-xl transition-all p-3">
-                <TextArea
-                  name="requirements"
+                <textarea
+                  value={requirements}
+                  onChange={(e) => setRequirements(e.target.value)}
                   placeholder="• Required skills and professional background..."
                   required
                   rows={5}
@@ -349,8 +417,9 @@ export default function NewJobPage() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-zinc-300">Perks & Benefits (Optional)</label>
               <div className="border border-white/20 hover:border-indigo-500 focus-within:!border-indigo-500 bg-zinc-950/50 rounded-xl transition-all p-3">
-                <TextArea
-                  name="benefits"
+                <textarea
+                  value={benefits}
+                  onChange={(e) => setBenefits(e.target.value)}
                   placeholder="• What perks are offered with this position?"
                   rows={3}
                   className="w-full text-white bg-transparent outline-none border-none focus:ring-0 resize-none text-sm"
@@ -360,7 +429,7 @@ export default function NewJobPage() {
           </div>
         </Fieldset>
 
-        {/* SECTION 3: Verified Corporate Context Block */}
+        {/* SECTION 3: Organization Info Block */}
         <div className="p-5 rounded-2xl bg-indigo-950/30 border border-indigo-500/30 flex items-center justify-between gap-4 w-full backdrop-blur-sm">
           <div className="flex flex-col gap-1">
             <label className="text-xs font-mono font-bold uppercase tracking-wider text-indigo-400">
@@ -376,7 +445,7 @@ export default function NewJobPage() {
           </span>
         </div>
 
-        {/* Footer Submits */}
+        {/* Action Controls */}
         <div className="flex flex-row items-center justify-end gap-4 w-full pt-6 border-t border-white/10">
           <Button
             type="button"
