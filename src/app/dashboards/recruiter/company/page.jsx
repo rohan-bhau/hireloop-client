@@ -26,6 +26,7 @@ import {
 } from "@gravity-ui/icons";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { GrLocation } from "react-icons/gr";
+import { createCompany } from "@/lib/actions/company";
 
 export default function CompanyProfilePage() {
   const router = useRouter();
@@ -145,9 +146,13 @@ export default function CompanyProfilePage() {
       // const res = await saveCompanyAction(updatedCompanyPayload);
 
         setCompany(updatedCompanyPayload);
+        const payload = await createCompany(updatedCompanyPayload)
+        if (payload.insertedId) {
+      toast.success("Company Profile Saved Successfully");
+            
+        }
         console.log(updatedCompanyPayload)
       setIsEditing(false);
-      toast("Company Profile Saved Successfully");
     } catch (err) {
       toast("An error occurred while saving organization modifications.");
     } finally {
