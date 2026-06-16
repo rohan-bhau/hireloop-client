@@ -1,9 +1,11 @@
 import React from 'react';
 import JobsTable from '@/components/dashboards/JobsTable';
 import { getCompanyJobs } from '@/lib/api/jobs';
+import { getLoggedInRecruiterCompany } from '@/lib/api/companies';
 
 const RecruiterJobs = async () => {
-  const companyId = 'comp_67890'; 
+  const company = await getLoggedInRecruiterCompany()
+  const companyId = company._id; 
   
   // Fetching data safely on the server side
   const jobs = await getCompanyJobs(companyId) || []; 
