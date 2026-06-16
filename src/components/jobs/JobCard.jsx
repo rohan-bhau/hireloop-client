@@ -6,6 +6,7 @@ import { Card, Chip } from '@heroui/react';
 import { Briefcase, ArrowUpRight } from '@gravity-ui/icons';
 // React Icons
 import { LuCircleDollarSign, LuMapPin } from 'react-icons/lu';
+import Link from 'next/link';
 
 export default function JobCard({ job }) {
   const [mounted, setMounted] = useState(false);
@@ -16,7 +17,8 @@ export default function JobCard({ job }) {
 
   if (!job) return null;
 
-  const {
+    const {
+      _id,
     title,
     companyName,
     companyLogo,
@@ -111,15 +113,13 @@ export default function JobCard({ job }) {
       </Card.Content>
 
       <Card.Footer className="p-0 pt-6 flex justify-between items-center">
-        <a 
-          href={companyWebsite}
-          target="_blank"
-          rel="noopener noreferrer"
+              <Link
+                  href={`/jobs/${_id}`}
           className="group inline-flex items-center gap-2 text-sm text-white hover:text-neutral-300 font-medium transition-colors cursor-pointer"
         >
           Apply Now
           <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-        </a>
+        </Link>
         
         {isRemote && (
           <span className="text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-900/50 px-2 py-0.5 rounded-md font-mono tracking-wider uppercase">
