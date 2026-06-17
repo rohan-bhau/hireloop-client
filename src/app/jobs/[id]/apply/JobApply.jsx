@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 // Hero UI exact imports based on your structure specifications
-import { Form, Button, TextField, Label, Input, TextArea, FieldError, Card } from '@heroui/react';
+import { Form, Button, TextField, Label, Input, TextArea, FieldError, Card, toast } from '@heroui/react';
 // Icons
 import { ArrowLeft, ArrowUpRight } from '@gravity-ui/icons';
 import { LuLink, LuUser, LuMail, LuBriefcase, LuClock, LuGithub, LuLinkedin, LuGlobe } from 'react-icons/lu';
 import Link from 'next/link';
 import Image from 'next/image';
+import { submitApplication } from '@/lib/actions/applications';
 
 export default function JobApply({ job, applicant }) {
   const [loading, setLoading] = useState(false);
@@ -33,34 +34,37 @@ export default function JobApply({ job, applicant }) {
 
     // Prepare complete payload structure 
     const payload = {
-      jobId:  job?._id,
+        jobId: job?._id,
+        jobTitle: job?.title,
+        companyId: job?.companyId,
+        companyName: job?.companyName,
       applicantId: applicant?.id,
       ...formData,
       status: 'pending',
-      appliedAt: new Date().toISOString()
     };
 
     console.log("Submitting Final Application Payload:", payload);
     
-    // Simulate API request processing
-    setTimeout(() => {
-      alert("Application submitted successfully!");
-      setLoading(false);
-    }, 1500);
+      const res = await submitApplication(payload)
+      if (res.insertedId) {
+          toast.success("Application Submitted Successfully!")
+          setFormData({
+    resumeLink: '',
+    experienceYears: '',
+    availableToStart: '',
+    githubLink: '',
+    linkedinLink: '',
+    portfolioLink: '',
+    coverLetter: '',      
+    whyHireYou: '',       
+    bestProjects: ''     
+  })
+      }
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] mt-10 text-white py-12 px-4 md:px-8 flex flex-col items-center">
+    <div className="min-h-screen bg-[#0a0a0a]  text-white py-12 px-4 md:px-8 flex flex-col items-center">
       <div className="max-w-3xl w-full">
-        
-        {/* Back Navigation */}
-        <Link 
-          href={`/jobs/${job?._id}`} 
-          className="group inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white mb-8 transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-          Back to position details
-        </Link>
 
         {/* Informative Header Banner */}
         <div className="bg-[#121212] border border-[#232323] p-6 rounded-2xl mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
