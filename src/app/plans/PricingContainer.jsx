@@ -1,81 +1,124 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Card, Button } from '@heroui/react';
+import React, { useState } from "react";
+import { Card, Button } from "@heroui/react";
 // Gravity UI Icons
-import { Rocket, ShieldCheck, Star } from '@gravity-ui/icons';
+import { Rocket, ShieldCheck, Star } from "@gravity-ui/icons";
 // React Icons
-import { LuCheck, LuUsers, LuBriefcase, LuSparkles } from 'react-icons/lu';
-import FramerAccordion from './FramerAccordion';
+import { LuCheck, LuUsers, LuBriefcase, LuSparkles } from "react-icons/lu";
+import FramerAccordion from "./FramerAccordion";
 
 export default function PricingContainer() {
-  const [audience, setAudience] = useState('seekers');
+  const [audience, setAudience] = useState("seekers");
 
   const plansData = {
     seekers: [
       {
-        name: "Free Tier",
+            name: "Free Tier",
+          id: "seeker-free",
         price: "$0",
         period: "forever",
-        description: "Perfect for getting started and exploring available positions.",
+        description:
+          "Perfect for getting started and exploring available positions.",
         icon: <LuBriefcase className="w-5 h-5 text-neutral-400" />,
-        features: ["Browse & save up to 10 jobs", "Apply to up to 3 jobs per month", "Basic job seeker profile", "Automated email alerts"],
+        features: [
+          "Browse & save up to 10 jobs",
+          "Apply to up to 3 jobs per month",
+          "Basic job seeker profile",
+          "Automated email alerts",
+        ],
         buttonText: "Get Started Free",
-        highlighted: false
+        highlighted: false,
       },
       {
-        name: "Pro Professional",
+          name: "Pro Professional",
+          id: "seeker-pro",
         price: "$19",
         period: "month",
         description: "Accelerate your path to landing your next destination.",
         icon: <Rocket className="w-5 h-5 text-purple-400" />,
-        features: ["Apply up to 30 jobs per month", "Unlimited saved job opportunities", "Real-time application tracking status", "Exclusive workspace salary insights"],
+        features: [
+          "Apply up to 30 jobs per month",
+          "Unlimited saved job opportunities",
+          "Real-time application tracking status",
+          "Exclusive workspace salary insights",
+        ],
         buttonText: "Upgrade to Pro",
-        highlighted: true
+        highlighted: true,
       },
       {
-        name: "Elite Premium",
+          name: "Elite Premium",
+          id: "seeker-elite",
         price: "$39",
         period: "month",
-        description: "The ultimate tier for professional candidates matching elite positions.",
+        description:
+          "The ultimate tier for professional candidates matching elite positions.",
         icon: <Star className="w-5 h-5 text-amber-400" />,
-        features: ["Everything included in Pro tier", "Unlimited global applications", "Profile boost optimization to recruiters", "Early access alerts to brand new listings", "Priority fast-track member support"],
+        features: [
+          "Everything included in Pro tier",
+          "Unlimited global applications",
+          "Profile boost optimization to recruiters",
+          "Early access alerts to brand new listings",
+          "Priority fast-track member support",
+        ],
         buttonText: "Go Elite Premium",
-        highlighted: false
-      }
+        highlighted: false,
+      },
     ],
     recruiters: [
       {
-        name: "Free Baseline",
+            name: "Free Baseline",
+          id: "recruiter-free",
         price: "$0",
         period: "forever",
-        description: "Ideal tracking baseline layout optimized for early startup hiring.",
+        description:
+          "Ideal tracking baseline layout optimized for early startup hiring.",
         icon: <LuUsers className="w-5 h-5 text-neutral-400" />,
-        features: ["Up to 3 active job postings", "Basic applicant management dashboard", "Standard public pipeline visibility", "Great for a company's first year"],
+        features: [
+          "Up to 3 active job postings",
+          "Basic applicant management dashboard",
+          "Standard public pipeline visibility",
+          "Great for a company's first year",
+        ],
         buttonText: "Post Free Openings",
-        highlighted: false
+        highlighted: false,
       },
       {
-        name: "Growth Scale",
+          name: "Growth Scale",
+          id: "recruiter-growth",
         price: "$49",
         period: "month",
-        description: "Scale up your recruitment power with analytical tracking insights.",
+        description:
+          "Scale up your recruitment power with analytical tracking insights.",
         icon: <LuSparkles className="w-5 h-5 text-purple-400" />,
-        features: ["Up to 10 active job postings", "Advanced candidate tracking suite", "Basic historical analytics dashboard", "Dedicated email response support"],
+        features: [
+          "Up to 10 active job postings",
+          "Advanced candidate tracking suite",
+          "Basic historical analytics dashboard",
+          "Dedicated email response support",
+        ],
         buttonText: "Accelerate Growth",
-        highlighted: true
+        highlighted: true,
       },
       {
-        name: "Enterprise Global",
+          name: "Enterprise Global",
+          id: "recruiter-enterprise",
         price: "$149",
         period: "month",
-        description: "Comprehensive tooling arrays custom-built for scaling operations.",
+        description:
+          "Comprehensive tooling arrays custom-built for scaling operations.",
         icon: <ShieldCheck className="w-5 h-5 text-blue-400" />,
-        features: ["Up to 50 active job postings", "Advanced analytics metrics pipeline", "Premium featured job highlights", "Multi-team collaboration workspaces", "Custom branding & priority support"],
+        features: [
+          "Up to 50 active job postings",
+          "Advanced analytics metrics pipeline",
+          "Premium featured job highlights",
+          "Multi-team collaboration workspaces",
+          "Custom branding & priority support",
+        ],
         buttonText: "Contact Enterprise",
-        highlighted: false
-      }
-    ]
+        highlighted: false,
+      },
+    ],
   };
 
   return (
@@ -84,17 +127,21 @@ export default function PricingContainer() {
       <div className="flex justify-center mb-16">
         <div className="bg-[#121212] border border-[#232323] p-1 rounded-xl inline-flex items-center gap-1">
           <button
-            onClick={() => setAudience('seekers')}
+            onClick={() => setAudience("seekers")}
             className={`px-5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all ${
-              audience === 'seekers' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md' : 'text-neutral-400 hover:text-white bg-transparent'
+              audience === "seekers"
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md"
+                : "text-neutral-400 hover:text-white bg-transparent"
             }`}
           >
             For Job Seekers
           </button>
           <button
-            onClick={() => setAudience('recruiters')}
+            onClick={() => setAudience("recruiters")}
             className={`px-5 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all ${
-              audience === 'recruiters' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md' : 'text-neutral-400 hover:text-white bg-transparent'
+              audience === "recruiters"
+                ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md"
+                : "text-neutral-400 hover:text-white bg-transparent"
             }`}
           >
             For Recruiters
@@ -108,9 +155,9 @@ export default function PricingContainer() {
           <Card
             key={idx}
             className={`flex flex-col justify-between rounded-3xl bg-[#111111] border p-0 transition-all duration-300 relative overflow-hidden group ${
-              plan.highlighted 
-                ? 'border-purple-500/80 shadow-[0_0_40px_-10px_rgba(168,85,247,0.15)] md:-translate-y-3' 
-                : 'border-[#222222] hover:border-neutral-700 hover:-translate-y-1 shadow-xl'
+              plan.highlighted
+                ? "border-purple-500/80 shadow-[0_0_40px_-10px_rgba(168,85,247,0.15)] md:-translate-y-3"
+                : "border-[#222222] hover:border-neutral-700 hover:-translate-y-1 shadow-xl"
             }`}
           >
             {/* Background Glow Layer for Highlighted Plan */}
@@ -131,11 +178,17 @@ export default function PricingContainer() {
                 )}
               </div>
 
-              <h3 className="text-lg font-bold text-neutral-100 mb-4 tracking-tight">{plan.name}</h3>
+              <h3 className="text-lg font-bold text-neutral-100 mb-4 tracking-tight">
+                {plan.name}
+              </h3>
 
               <div className="flex items-baseline gap-1.5 mb-3">
-                <span className="text-5xl font-black text-white tracking-tight">{plan.price}</span>
-                <span className="text-neutral-500 text-xs font-medium uppercase tracking-wider">/ {plan.period}</span>
+                <span className="text-5xl font-black text-white tracking-tight">
+                  {plan.price}
+                </span>
+                <span className="text-neutral-500 text-xs font-medium uppercase tracking-wider">
+                  / {plan.period}
+                </span>
               </div>
 
               <p className="text-xs text-neutral-400 font-normal leading-relaxed">
@@ -147,24 +200,36 @@ export default function PricingContainer() {
             <div className="p-8 flex-1 flex flex-col justify-between bg-[#111111]">
               <ul className="flex flex-col gap-4 mb-8">
                 {plan.features.map((feature, fIdx) => (
-                  <li key={fIdx} className="flex items-start gap-3 text-sm text-neutral-300 font-normal">
+                  <li
+                    key={fIdx}
+                    className="flex items-start gap-3 text-sm text-neutral-300 font-normal"
+                  >
                     <div className="w-4 h-4 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
                       <LuCheck className="w-2.5 h-2.5 text-emerald-400" />
                     </div>
-                    <span className="text-neutral-300 group-hover:text-neutral-200 transition-colors">{feature}</span>
+                    <span className="text-neutral-300 group-hover:text-neutral-200 transition-colors">
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>
 
-              <Button 
-                className={`w-full font-bold rounded-xl text-xs py-5 transition-all duration-200 ${
-                  plan.highlighted 
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/40 hover:opacity-95' 
-                    : 'bg-[#1a1a1a] border border-[#262626] text-neutral-300 hover:bg-neutral-800 hover:text-white'
-                }`}
-              >
-                {plan.buttonText}
-              </Button>
+                    <form action="/api/checkout_sessions" method="POST">
+                        <input type="hidden" name="plan_id" value={plan.id} />
+                <section>
+                  <button
+                    type="submit"
+                    role="link"
+                    className={`w-full font-bold rounded-xl text-xs py-5 transition-all duration-200 ${
+                      plan.highlighted
+                        ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-950/40 hover:opacity-95"
+                        : "bg-[#1a1a1a] border border-[#262626] text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                    }`}
+                  >
+                    {plan.buttonText}
+                  </button>
+                </section>
+              </form>
             </div>
           </Card>
         ))}

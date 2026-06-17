@@ -19,7 +19,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Browse Jobs", href: "/jobs" },
     { name: "Company", href: "/company" },
-    { name: "Pricing", href: "/pricing" },
+    { name: "Pricing", href: "/plans" },
   ];
 
   // Logout Handler
