@@ -8,11 +8,16 @@ import { Eye, EyeSlash } from "@gravity-ui/icons";
 // Auth client instance 
 import { signIn } from "@/lib/auth-client"; 
 import { FcGoogle } from "react-icons/fc";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SignInPage() {
   // Form States
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter()
+
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirect") || "/"
 
   // Visibility States for Password
   const [showPassword, setShowPassword] = useState(false);
@@ -34,10 +39,11 @@ export default function SignInPage() {
     const { data, error: authError } = await signIn.email({
       email,
       password,
-      callbackURL: "/", // Where to redirect your users upon successful entry
+      // callbackURL: "/", // Where to redirect your users upon successful entry
     });
 
     setIsLoading(false);
+    router.push(redirectTo)
 
     if (authError) {
       setError(authError.message || "Invalid email or password.");
@@ -45,6 +51,7 @@ export default function SignInPage() {
       setSuccess("Welcome back! Redirecting...");
       setEmail("");
       setPassword("");
+          router.push(redirectTo)
     }
   };
 
@@ -54,8 +61,9 @@ export default function SignInPage() {
     try {
       await signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        // callbackURL: "/dashboard",
       });
+          router.push(redirectTo)
     } catch (err) {
       setError("Failed to initialize Google sign-in.");
     }
@@ -150,7 +158,7 @@ export default function SignInPage() {
           {/* Toggle Back to Sign Up */}
           <p className="text-center text-small text-default-500 mt-2">
             Don't have an account yet?{" "}
-            <Link href="/auth/signup" className="text-primary hover:underline font-medium">
+            <Link href={`/auth/signup?redirect=${redirectTo}`} className="text-primary hover:underline font-medium">
               Sign Up
             </Link>
           </p>

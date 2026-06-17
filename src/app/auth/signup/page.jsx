@@ -9,6 +9,7 @@ import { Eye, EyeSlash } from "@gravity-ui/icons";
 import {  signIn, signUp } from "@/lib/auth-client"; 
 import { FcGoogle } from "react-icons/fc";
 import {Description, Label, Radio, RadioGroup} from "@heroui/react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 
 export default function SignUpPage() {
@@ -27,6 +28,9 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+    const searchParams = useSearchParams()
+  const redirectTo = searchParams.get("redirect") || "/"
+  const router = useRouter()
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
@@ -49,7 +53,6 @@ export default function SignUpPage() {
       password,
       name,
       role,
-      callbackURL: "/auth/signin", 
     });
 
     setIsLoading(false);
@@ -62,6 +65,7 @@ export default function SignUpPage() {
       setEmail("");
       setPassword("");
       setConfirmPassword("");
+      router.push(redirectTo)
     }
   };
 
@@ -71,8 +75,8 @@ export default function SignUpPage() {
     try {
       await signIn.social({
         provider: "google",
-        callbackURL: "/",
       });
+      router.push(redirectTo)
     } catch (err) {
       setError("Failed to initialize Google sign-in.");
     }
@@ -221,7 +225,7 @@ export default function SignUpPage() {
           {/* Toggle Back to Sign In */}
           <p className="text-center text-small text-default-500 mt-2">
             Already have an account?{" "}
-            <Link href="/auth/signin" className="text-primary hover:underline font-medium">
+            <Link href={`/auth/signin?redirect=${redirectTo}`} className="text-primary hover:underline font-medium">
               Sign In
             </Link>
           </p>

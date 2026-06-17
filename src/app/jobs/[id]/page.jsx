@@ -53,7 +53,7 @@ const JobDetailPage = async ({ params }) => {
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white py-12 px-4 md:px-8">
+    <div className="min-h-screen mt-10 bg-[#0a0a0a] text-white py-12 px-4 md:px-8">
       <div className="max-w-5xl mx-auto w-full">
         
         {/* Back Link Nav */}
@@ -202,16 +202,15 @@ const JobDetailPage = async ({ params }) => {
             <hr className="border-neutral-800 my-1" />
 
             {/* Main Action Call to Button */}
-            <Button
-              as="a"
-              href={companyWebsite}
-              target="_blank"
+            <Link
+                            href={`/jobs/${id}/apply`}
+
               rel="noopener noreferrer"
               color="primary"
-              className="w-full font-semibold py-6 text-sm shadow-lg rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition-opacity"
+              className="w-full font-semibold py-6 text-sm text-center shadow-lg rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 transition-opacity"
             >
               Apply For This Position
-            </Button>
+            </Link>
             
             <p className="text-[11px] text-neutral-500 text-center font-light leading-snug">
               By clicking apply, you will be redirected to {companyName}'s job tracking system website safely.
