@@ -22,6 +22,18 @@ export default function Navbar() {
     { name: "Pricing", href: "/plans" },
   ];
 
+  const dashboardLinks = {
+    seeker: "dashboards/seeker",
+    recruiter:"dashboards/recruiter"
+  }
+
+  if (user?.email) {
+    navLinks.push({
+      name: "Dashboard",
+      href: dashboardLinks[user?.role || "seeker"]
+    })
+  }
+
   // Logout Handler
   const handleSignOut = async () => {
     await signOut({
