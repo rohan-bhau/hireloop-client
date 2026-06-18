@@ -47,12 +47,14 @@ export default function SignUpPage() {
     }
 
     setIsLoading(true);
+    const plan = role === 'seeker' ? "seeker-free" : "recruiter-free"
 
     const { data, error: authError } = await signUp.email({
       email,
       password,
       name,
       role,
+      plan
     });
 
     setIsLoading(false);

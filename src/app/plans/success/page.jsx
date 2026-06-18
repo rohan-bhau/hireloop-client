@@ -6,6 +6,7 @@ import { Button, Card } from '@heroui/react'
 import {  ArrowRight } from '@gravity-ui/icons'
 import { LuMail, LuReceipt, LuSparkles,  LuCircleCheckBig } from 'react-icons/lu'
 import { FiHelpCircle } from 'react-icons/fi'
+import { createSubscription } from '@/lib/actions/subscriptions'
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
@@ -19,7 +20,7 @@ export default async function Success({ searchParams }) {
     expand: ['line_items', 'payment_intent']
   })
 
-  const { status, customer_details, amount_total, currency } = session
+  const { status, customer_details, amount_total, currency, metadata } = session
   const customerEmail = customer_details?.email
 
   if (status === 'open') {
@@ -32,7 +33,16 @@ export default async function Success({ searchParams }) {
     currency: currency || 'USD'
   }).format(amount_total / 100)
 
-  if (status === 'complete') {
+    if (status === 'complete') {
+      
+        const subsInfo = {
+            email: customerEmail,
+            planId: metadata.planId
+        }
+
+        const result = await createSubscription(subsInfo)
+        console.log(result)
+
     return (
       <div className="min-h-screen bg-[#0a0a0a] text-white py-20 px-4 md:px-8 flex flex-col items-center justify-center relative overflow-hidden">
         
