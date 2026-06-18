@@ -101,7 +101,7 @@ const ApplyPage = async ({ params }) => {
                 You have successfully expressed interest in the <span className="text-neutral-200 font-medium">{job?.title || "Software Engineer"}</span> role at <span className="text-neutral-200 font-medium">{job?.companyName || "this company"}</span>. Multiple submissions aren't necessary.
               </p>
             </div>
-            <Link href="/dashboard/applications">
+            <Link href="/dashboards/seeker/applications">
               <Button
                 className="mt-2 bg-[#1e1e1e] border border-neutral-800 text-neutral-200 font-medium px-6 py-2.5 rounded-xl hover:bg-neutral-800 transition-colors"
               >

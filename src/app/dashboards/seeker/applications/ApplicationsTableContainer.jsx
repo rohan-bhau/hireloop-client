@@ -7,19 +7,44 @@ import { Magnifier, Eye } from '@gravity-ui/icons';
 // React Icons
 import { LuFileSpreadsheet } from 'react-icons/lu';
 
+const formatAppliedDate = (appliedAt) => {
+  if (!appliedAt) return "N/A";
+  
+  const dateSource = appliedAt['$date'] ? appliedAt['$date'] : appliedAt;
+  const parsedDate = new Date(dateSource);
+  
+  if (isNaN(parsedDate.getTime())) return "Recent";
+
+  const now = new Date();
+  const diffTime = Math.abs(now - parsedDate);
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) {
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    if (diffHours === 0) return "Just now";
+    return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  }
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  
+  return parsedDate.toLocaleDateString('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+};
+
 export default function ApplicationsTableContainer({ initialApplications = [] }) {
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // dashboard static cards
   const totalApplied = initialApplications.length;
   const shortlistedCount = initialApplications.filter(app => app.status === 'shortlisted').length;
   const interviewCount = initialApplications.filter(app => app.status === 'interview' || app.status === 'offered').length;
   const successRate = totalApplied > 0 ? Math.round(((shortlistedCount + interviewCount) / totalApplied) * 100) : 0;
 
-  // search and filtering
   const filteredApps = initialApplications.filter(app => {
     const matchesSearch = app.jobTitle?.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           app.companyName?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -30,14 +55,12 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
     return matchesSearch;
   });
 
-  // pagination slice range
   const totalPages = Math.ceil(filteredApps.length / itemsPerPage);
   const paginatedApps = filteredApps.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // status badge color 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case 'pending': return 'warning';
+      case 'applied': return 'warning';
       case 'shortlisted': return 'success';
       case 'rejected': return 'danger';
       case 'offered': return 'secondary';
@@ -47,7 +70,7 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
 
   return (
     <>
-      {/* SECTION 1: STATISTICS CARDS */}
+      {/* SECTION 1: STATISTICS COUNTER CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card className="bg-[#121212] border border-[#222224] p-5 rounded-2xl shadow-sm">
           <span className="text-xs text-neutral-400 font-medium block mb-2">Total Applied</span>
@@ -70,7 +93,7 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
         </Card>
       </div>
 
-      {/* SECTION 2: SEARCH FILTER AND CONTROLS */}
+      {/* SECTION 2: CONTROLS */}
       <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between mb-6">
         <div className="relative flex items-center max-w-md w-full bg-[#121212] border border-[#222224] rounded-xl focus-within:border-neutral-700 transition-colors">
           <Magnifier className="absolute left-3.5 text-neutral-500 w-4 h-4" />
@@ -108,7 +131,7 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
         </div>
       </div>
 
-      {/* SECTION 3: CORE DATA TABLE WITH EXACT V3 DOT NOTATION */}
+      {/* SECTION 3: DATA TABLE */}
       <div className="w-full bg-[#121212] text-white p-4 rounded-2xl border border-[#222224] shadow-2xl">
         <Table aria-label="Job Application Tracker Ledger">
           <Table.ResizableContainer>
@@ -121,7 +144,7 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
                 <Table.Column defaultWidth="1.2fr" id="company" minWidth={160}>
                   Company <Table.ColumnResizer />
                 </Table.Column>
-                <Table.Column defaultWidth="1fr" id="appliedDate" minWidth={140}>
+                <Table.Column defaultWidth="1.2fr" id="appliedDate" minWidth={150}>
                   Applied Date <Table.ColumnResizer />
                 </Table.Column>
                 <Table.Column defaultWidth="1fr" id="status" minWidth={120}>
@@ -145,19 +168,16 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
                   </Table.Row>
                 ) : (
                   paginatedApps.map((app) => {
-                    const appliedDate = app.appliedAt?.['$date'] 
-                      ? new Date(app.appliedAt['$date']).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) 
-                      : 'Recent';
                     const appId = app._id?.['$oid'] || app._id || `app-${app.jobId}`;
+                    const fallbackChars = app.jobTitle ? app.jobTitle.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() : 'JB';
 
                     return (
                       <Table.Row key={appId} className="border-b border-neutral-900/60 hover:bg-white/[0.02] transition-colors">
-                        
-                        {/* Job Title & Metadata */}
                         <Table.Cell>
                           <div className="flex items-center gap-3 py-1">
-                            <Avatar color="default" className="w-9 h-9 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-center font-bold text-xs shrink-0">
-                              <Avatar.Fallback>{app.jobTitle ? app.jobTitle.substring(0, 2).toUpperCase() : 'JB'}</Avatar.Fallback>
+                            <Avatar className="rounded-lg w-9 h-9 bg-[#1e1e1f] border border-neutral-800 flex items-center justify-center font-bold text-xs shrink-0 text-neutral-300 font-mono">
+                              <Avatar.Image alt={app.companyName} src={app.companyLogo} />
+                              <Avatar.Fallback>{fallbackChars}</Avatar.Fallback>
                             </Avatar>
                             <div className="flex flex-col">
                               <span className="text-sm font-bold text-neutral-200">{app.jobTitle}</span>
@@ -166,17 +186,16 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
                           </div>
                         </Table.Cell>
 
-                        {/* Company Identity */}
                         <Table.Cell>
                           <span className="text-sm text-neutral-400 font-medium">{app.companyName}</span>
                         </Table.Cell>
 
-                        {/* Normalized Applied Date String */}
                         <Table.Cell>
-                          <span className="text-xs text-neutral-400 font-light font-mono">{appliedDate}</span>
+                          <span className="text-sm text-neutral-300 font-medium">
+                            {formatAppliedDate(app.appliedAt)}
+                          </span>
                         </Table.Cell>
 
-                        {/* Status Badges Matching JobsTable Structure */}
                         <Table.Cell>
                           <Chip 
                             color={getStatusColor(app.status)} 
@@ -188,7 +207,6 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
                           </Chip>
                         </Table.Cell>
 
-                        {/* Interactive Metrics Details Anchor */}
                         <Table.Cell>
                           <Button
                             isIconOnly
@@ -200,7 +218,6 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
                             <Eye className="size-4" />
                           </Button>
                         </Table.Cell>
-
                       </Table.Row>
                     );
                   })
@@ -211,21 +228,60 @@ export default function ApplicationsTableContainer({ initialApplications = [] })
           </Table.ResizableContainer>
         </Table>
 
-        {/* SECTION 4: TABLE PAGination FOOTER */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-neutral-900 bg-transparent flex justify-center mt-4">
-            <Pagination 
-              total={totalPages} 
-              page={currentPage} 
-              onChange={setCurrentPage}
-              color="secondary"
-              size="sm"
-              classNames={{
-                wrapper: "gap-1",
-                item: "bg-[#161618] text-neutral-400 rounded-lg hover:bg-neutral-800 hover:text-white border border-neutral-800/40 text-xs min-w-8 h-8",
-                cursor: "bg-purple-600 text-white rounded-lg font-bold text-xs min-w-8 h-8 shadow-md"
-              }}
-            />
+          <div className="p-4 border-t border-neutral-900 bg-transparent flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+            <Pagination.Summary className="text-xs text-neutral-500">
+              Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredApps.length)} of {filteredApps.length} results
+            </Pagination.Summary>
+            
+            <Pagination className="justify-center">
+              <Pagination.Content>
+                {/* Previous Component Item */}
+                <Pagination.Item>
+                  <Pagination.Previous 
+                    isDisabled={currentPage === 1} 
+                    onPress={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    className={`text-neutral-400 rounded-lg border border-neutral-800/40 text-xs px-3 h-8 flex justify-end items-center gap-1 select-none transition-all ${
+                      currentPage === 1 ? "opacity-40 bg-neutral-900/50 cursor-not-allowed" : "bg-[#161618] hover:bg-neutral-800 hover:text-white cursor-pointer"
+                    }`}
+                  >
+                    <Pagination.PreviousIcon />
+                    <span>Previous</span>
+                  </Pagination.Previous>
+                </Pagination.Item>
+
+                {/* Number Links Mapping */}
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <Pagination.Item key={p}>
+                    <Pagination.Link 
+                      isActive={p === currentPage} 
+                      onPress={() => setCurrentPage(p)}
+                      className={`rounded-lg text-xs min-w-8 h-8 flex items-center justify-center font-semibold transition-all border cursor-pointer select-none ${
+                        p === currentPage
+                          ? "bg-purple-600 text-white font-bold border-purple-600 shadow-md"
+                          : "bg-[#161618] text-neutral-400 border-neutral-800/40 hover:bg-neutral-800 hover:text-white"
+                      }`}
+                    >
+                      {p}
+                    </Pagination.Link>
+                  </Pagination.Item>
+                ))}
+
+                {/* Next Component Item */}
+                <Pagination.Item>
+                  <Pagination.Next 
+                    isDisabled={currentPage === totalPages} 
+                    onPress={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                    className={`text-neutral-400 rounded-lg border border-neutral-800/40 text-xs px-3 h-8 flex items-center gap-1 select-none transition-all ${
+                      currentPage === totalPages ? "opacity-40 bg-neutral-900/50 cursor-not-allowed" : "bg-[#161618] hover:bg-neutral-800 hover:text-white cursor-pointer"
+                    }`}
+                  >
+                    <span>Next</span>
+                    <Pagination.NextIcon />
+                  </Pagination.Next>
+                </Pagination.Item>
+              </Pagination.Content>
+            </Pagination>
           </div>
         )}
       </div>
