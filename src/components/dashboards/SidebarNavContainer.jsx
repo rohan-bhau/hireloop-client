@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Button, Drawer } from "@heroui/react";
 
 // Icons 
-import { House, Envelope, Gear, Person, Briefcase, Bookmark, LayoutSideContent, Xmark } from "@gravity-ui/icons";
+import { House, Envelope, Gear, Person, Briefcase, Bookmark, LayoutSideContent, Xmark, Persons } from "@gravity-ui/icons";
 import { FaBriefcase } from "react-icons/fa";
 import { IoAddCircleOutline } from "react-icons/io5";
 import { CgOrganisation } from "react-icons/cg";
@@ -26,7 +26,9 @@ const getIcon = (iconId, className) => {
     "post-job": <IoAddCircleOutline className={className} />,
     company: <CgOrganisation className={className} />,
     messages: <Envelope className={className} />,
-    profile: <Person className={className} />
+    profile: <Person className={className} />,
+
+    "users-admin": <Persons className={className} />
   };
 
   return iconMap[iconId] || <Briefcase className={className} />;

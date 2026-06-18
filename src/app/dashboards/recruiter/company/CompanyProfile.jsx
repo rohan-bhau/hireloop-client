@@ -28,7 +28,8 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { GrLocation } from "react-icons/gr";
 import { createCompany } from "@/lib/actions/company";
 
-export default function CompanyProfile({recruiter,company:recruiterCompany}) {
+export default function CompanyProfile({ recruiter, company: recruiterCompany }) {
+  console.log(recruiter)
   const router = useRouter();
   const fileInputRef = useRef(null);
 
@@ -137,7 +138,8 @@ export default function CompanyProfile({recruiter,company:recruiterCompany}) {
       employeeCount,
       description,
       status: company?.status || "pending",
-      recruiterId: recruiter.id
+      recruiterId: recruiter.id,
+      recruiterEmail: recruiter.email
     };
 
     try {
@@ -148,7 +150,9 @@ export default function CompanyProfile({recruiter,company:recruiterCompany}) {
 
         setCompany(updatedCompanyPayload);
         const payload = await createCompany(updatedCompanyPayload)
-        if (payload.insertedId) {
+      if (payload.insertedId) {
+        const savedCompany = { ...setCompany, _id: payload.insertedId }
+        setCompany(savedCompany)
       toast.success("Company Profile Saved Successfully");
             
         }
